@@ -1,6 +1,5 @@
 import pygame
-import twoplayers
-import oneplayer
+import actions
 
 pygame.init()
 
@@ -49,17 +48,17 @@ while not done:
             done = True
         pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONUP and pos[0]>x and pos[0]<x+r1[2] and pos[1]>y and pos[1]<y+r1[3]:
-            game = 2
+            game = 1
             done = True
         if event.type == pygame.MOUSEBUTTONUP and pos[0]>1000-r2[2]-x and pos[0]<1000-x and pos[1]>y and pos[1]<y+r2[3]:
-            game = 1
+            game = 2
             done = True
 
     pygame.display.flip()
     clock.tick(60)
 
 if game == 1:
-    twoplayers.game()
+    actions.game(1)
 
 elif game == 2:
-    oneplayer.game()
+    actions.game(2)

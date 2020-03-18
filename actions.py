@@ -6,7 +6,7 @@ from bullet import Bullet
 from pygame.locals import *
 from math import *
 
-def game():
+def game(game):
     pygame.init()
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
@@ -16,27 +16,32 @@ def game():
     size = (SCREENWIDTH, SCREENHEIGHT)
     screen = pygame.display.set_mode(size)
 
-    tic = 0
     cd = 0
-
-
+    tic = 0
     s1 = 0
     s2 = 0
     pygame.display.set_caption("Player 1 - " + str(s1) + "  Player 2 - " + str(s2))
 
-    d = random.randint(0, 3)
-    d2 = random.randint(0, 3)
-    xpos1 = 100 * random.randint(0, 9) + 20
-    ypos1 = 100 * random.randint(0, 5) + 35
-    xpos2 = 100 * random.randint(0, 9) + 20
-    ypos2 = 100 * random.randint(0, 5) + 35
+    d = random.randint(0,3)
+    d2 = random.randint(0,3)
+    xpos1 = 100*random.randint(0, 9) + 20
+    ypos1 = 100*random.randint(0, 5) + 35
+    xpos2 = 100*random.randint(0, 9) + 20
+    ypos2 = 100*random.randint(0, 5) + 35
 
-    player = Tank(xpos1, ypos1, "1", 1)
-    player2 = Tank(xpos2, ypos2, "2", 1)
-    player.setangle(d * 30)
+
+    if game == 2:
+        player = Tank(xpos1, ypos1, "1", 0)
+        player2 = Tank(xpos2, ypos2, "2", 0)
+    if game == 1:
+        player = Tank(xpos1, ypos1, "1", 1)
+        player2 = Tank(xpos2, ypos2, "2", 1)
+
+    player.setangle(d*30)
     player.setangle(0)
-    player2.setangle(d2 * 30)
+    player2.setangle(d2*30)
     player2.setangle(0)
+
 
     all_sprites_list = pygame.sprite.Group()
     players = pygame.sprite.Group()
@@ -71,11 +76,10 @@ def game():
     walls.add(Wall(800, 500, 100, 5))
     walls.add(Wall(900, 200, 5, 200))
 
+
     all_sprites_list.add(walls)
     player.walls = walls
     player2.walls = walls
-    p2angle = player2.getangle()
-    p2dir = player2.getdirection()
 
 
     carryOn = True
@@ -107,6 +111,19 @@ def game():
                     if player.alive():
                         bullet = player.shoot()
                         all_sprites_list.add(bullet)
+                elif event.key == K_s:
+                    direction2 = MOVE_LEFT
+                elif event.key == K_w:
+                    direction2 = MOVE_RIGHT
+                elif event.key == K_a:
+                    angle2 = SPIN_UP
+                elif event.key == K_d:
+                    angle2 = SPIN_DOWN
+                elif event.key == K_q:
+                    if player2.alive():
+                        bullet = player2.shoot()
+                        all_sprites_list.add(bullet)
+
 
             elif event.type == KEYUP:
                 if event.key == K_UP:
@@ -117,25 +134,45 @@ def game():
                     angle = 0
                 elif event.key == K_LEFT:
                     angle = 0
+                elif event.key == K_w:
+                    direction2 = 0
+                elif event.key == K_s:
+                    direction2 = 0
+                elif event.key == K_d:
+                    angle2 = 0
+                elif event.key == K_a:
+                    angle2 = 0
 
         player.setangle(angle)
         player.move(direction)
 
-        if tic%20 == 0:
-            p2angle = player2.getangle()
-            p2dir = player2.getdirection()
-        if tic%100 == 0:
-            if player2.alive():
-                bullet = player2.shoot()
-                all_sprites_list.add(bullet)
-        tic+=1
-        player2.setangle(p2angle)
-        player2.move(p2dir)
+        if game == 1:
+            if tic % 20 == 0:
+                p2angle = player2.getangle()
+                p2dir = player2.getdirection()
+            if tic % 100 == 0:
+                if player2.alive():
+                    bullet = player2.shoot()
+                    all_sprites_list.add(bullet)
+            tic += 1
+            player2.setangle(p2angle)
+            player2.move(p2dir)
+        if game == 2:
+            player2.setangle(angle2)
+            player2.move(direction2)
         num = 0
         for item in all_sprites_list:
             if item.getType() == "bullet":
                 num = item.hit(players, p1, p2)
 
+        if not(player in all_sprites_list.sprites()):
+            if not score == 1:
+                score = -1
+        elif not(player2 in all_sprites_list.sprites()):
+            if not score == -1:
+                score = 1
+        else:
+            score = 0
 
         all_sprites_list.update()
 
@@ -158,8 +195,14 @@ def game():
                 xpos2 = 100 * random.randint(0, 9) + 20
                 ypos2 = 100 * random.randint(0, 5) + 35
 
-                player = Tank(xpos1, ypos1, "1", 1)
-                player2 = Tank(xpos2, ypos2, "2", 1)
+
+                if game == 2:
+                    player = Tank(xpos1, ypos1, "1", 0)
+                    player2 = Tank(xpos2, ypos2, "2", 0)
+                if game == 1:
+                    player = Tank(xpos1, ypos1, "1", 1)
+                    player2 = Tank(xpos2, ypos2, "2", 1)
+
                 player.setangle(d * 30)
                 player.setangle(0)
                 player2.setangle(d2 * 30)
@@ -178,8 +221,6 @@ def game():
                 all_sprites_list.add(walls)
                 player.walls = walls
                 player2.walls = walls
-
-
 
         screen.fill(WHITE)
 
