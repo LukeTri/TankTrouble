@@ -22,8 +22,22 @@ def game():
     s2 = 0
     pygame.display.set_caption("Player 1 - " + str(s1) + "  Player 2 - " + str(s2))
 
-    player = Tank(200, 300, "1", 0)
-    player2 = Tank(0, 100, "2", 0)
+    d = random.randint(0,3)
+    d2 = random.randint(0,3)
+    xpos1 = 100*random.randint(0, 9) + 20
+    ypos1 = 100*random.randint(0, 5) + 35
+    xpos2 = 100*random.randint(0, 9) + 20
+    ypos2 = 100*random.randint(0, 5) + 35
+
+
+
+    player = Tank(xpos1, ypos1, "1", 0)
+    player2 = Tank(xpos2, ypos2, "2", 0)
+    player.setangle(d*30)
+    player.setangle(0)
+    player2.setangle(d2*30)
+    player2.setangle(0)
+
 
     all_sprites_list = pygame.sprite.Group()
     players = pygame.sprite.Group()
@@ -57,6 +71,7 @@ def game():
     walls.add(Wall(700, 100, 200, 5))
     walls.add(Wall(800, 500, 100, 5))
     walls.add(Wall(900, 200, 5, 200))
+
 
     all_sprites_list.add(walls)
     player.walls = walls
@@ -156,8 +171,20 @@ def game():
                 elif not player2.alive():
                     s1 += 1
 
-                player = Tank(200, 300, "1", 1)
-                player2 = Tank(0, 100, "2", 1)
+                d = random.randint(0, 3)
+                d2 = random.randint(0, 3)
+                xpos1 = 100 * random.randint(0, 9) + 20
+                ypos1 = 100 * random.randint(0, 5) + 35
+                xpos2 = 100 * random.randint(0, 9) + 20
+                ypos2 = 100 * random.randint(0, 5) + 35
+
+                player = Tank(xpos1, ypos1, "1", 0)
+                player2 = Tank(xpos2, ypos2, "2", 0)
+                player.setangle(d * 30)
+                player.setangle(0)
+                player2.setangle(d2 * 30)
+                player2.setangle(0)
+
                 all_sprites_list = pygame.sprite.Group()
                 players = pygame.sprite.Group()
                 p1 = pygame.sprite.Group()
