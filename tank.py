@@ -37,6 +37,7 @@ class Tank(pygame.sprite.Sprite):
 
 
 
+
     def getType(self):
         return "tank"
 

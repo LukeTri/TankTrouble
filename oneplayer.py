@@ -17,6 +17,7 @@ def game():
     screen = pygame.display.set_mode(size)
 
     tic = 0
+    cd = 0
 
 
     s1 = 0
@@ -92,29 +93,9 @@ def game():
                 elif event.key == K_RIGHT:
                     angle = SPIN_DOWN
                 elif event.key == K_SPACE:
-                    bullet = player.shoot()
-                    all_sprites_list.add(bullet)
-                elif event.key == K_TAB:
-                    if score ==1:
-                        s1+=1
-                    if score ==-1:
-                        s2+=1
-                    player = Tank(200, 300, "1", 1)
-                    player2 = Tank(0, 100, "2", 1)
-                    all_sprites_list = pygame.sprite.Group()
-                    players = pygame.sprite.Group()
-                    p1 = pygame.sprite.Group()
-                    p1.add(player)
-                    p2 = pygame.sprite.Group()
-                    p2.add(player2)
-                    all_sprites_list.add(player)
-                    all_sprites_list.add(player2)
-                    players.add(player)
-                    players.add(player2)
-                    all_sprites_list.add(walls)
-                    player.walls = walls
-                    player2.walls = walls
-
+                    if player.alive():
+                        bullet = player.shoot()
+                        all_sprites_list.add(bullet)
 
             elif event.type == KEYUP:
                 if event.key == K_UP:
@@ -133,8 +114,9 @@ def game():
             p2angle = player2.getangle()
             p2dir = player2.getdirection()
         if tic%100 == 0:
-            bullet = player2.shoot()
-            all_sprites_list.add(bullet)
+            if player2.alive():
+                bullet = player2.shoot()
+                all_sprites_list.add(bullet)
         tic+=1
         player2.setangle(p2angle)
         player2.move(p2dir)
@@ -143,16 +125,39 @@ def game():
             if item.getType() == "bullet":
                 num = item.hit(players, p1, p2)
 
-        if not(player in all_sprites_list.sprites()):
-            if not score == 1:
-                score = -1
-        elif not(player2 in all_sprites_list.sprites()):
-            if not score == -1:
-                score = 1
-        else:
-            score = 0
 
         all_sprites_list.update()
+
+        if (not player2.alive()) or (not player.alive()):
+            cd+=1
+            if cd == 200:
+                cd=0
+                if not player.alive() and not player2.alive():
+                    s1+=1
+                    s2+=1
+                elif not player.alive():
+                    s2 += 1
+                elif not player2.alive():
+                    s1 += 1
+
+                player = Tank(200, 300, "1", 1)
+                player2 = Tank(0, 100, "2", 1)
+                all_sprites_list = pygame.sprite.Group()
+                players = pygame.sprite.Group()
+                p1 = pygame.sprite.Group()
+                p1.add(player)
+                p2 = pygame.sprite.Group()
+                p2.add(player2)
+                all_sprites_list.add(player)
+                all_sprites_list.add(player2)
+                players.add(player)
+                players.add(player2)
+                all_sprites_list.add(walls)
+                player.walls = walls
+                player2.walls = walls
+
+
+
         screen.fill(WHITE)
 
         pygame.display.set_caption("Player 1 - " + str(s1) + "  Player 2 - " + str(s2))
