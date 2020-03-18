@@ -19,8 +19,6 @@ class Tank(pygame.sprite.Sprite):
             self.control(0, 0)
 
     def setangle(self, angle):
-        if self.name == "1":
-            print(self.dir)
         self.dir += 3*angle
         self.angle = angle
 
@@ -34,7 +32,7 @@ class Tank(pygame.sprite.Sprite):
 
     def shoot(self):
         return Bullet(self.rect.x + self.image.get_width()/2*(1+cos(radians(self.dir))), self.rect.y +
-                      self.image.get_height()/2*(1-sin(radians(self.dir))), self.dir, self.name, self.walls)
+                      self.image.get_height()/2*(1-sin(radians(self.dir))), self.dir, self.name, self.walls, self.game)
 
 
 
@@ -98,7 +96,7 @@ class Tank(pygame.sprite.Sprite):
             self.image = rot_image.convert_alpha()
             self.rect = rot_rect
 
-    def __init__(self, x, y, name):
+    def __init__(self, x, y, name, game):
         # Call the parent class (Sprite) constructor
         super().__init__()
         self.movex = 0  # move along X
@@ -111,3 +109,4 @@ class Tank(pygame.sprite.Sprite):
         self.name = name
         self.walls = pygame.sprite.Group()
         self.angle = 0
+        self.game = game

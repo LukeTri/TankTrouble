@@ -6,7 +6,7 @@ base_image = pygame.image.load("ball.png")
 base_image = pygame.transform.scale(base_image, (10,10))
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, angle, tank, walls):
+    def __init__(self, x, y, angle, tank, walls, game):
         super().__init__()
         self.walls = walls
         self.dir = angle
@@ -19,6 +19,7 @@ class Bullet(pygame.sprite.Sprite):
         self.ydir = -round(sin(radians(self.dir)) * 6)
         self.bounces = 0
         self.time = 0
+        self.game = game
 
     def getType(self):
         return "bullet"
@@ -41,11 +42,17 @@ class Bullet(pygame.sprite.Sprite):
         if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
             self.xdir = self.xdir * -1
             self.rect.x += self.xdir
-            if not self.tank == "2":
+            if self.game == 1:
+                if not self.tank == "2":
+                    self.tank = ''
+            else:
                 self.tank = ''
         self.rect.y += self.ydir
         if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
             self.ydir = self.ydir * -1
             self.rect.y += self.ydir
-            if not self.tank == "2":
+            if self.game == 1:
+                if not self.tank == "2":
+                    self.tank = ''
+            else:
                 self.tank = ''
