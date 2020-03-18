@@ -11,6 +11,13 @@ def game(game):
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
 
+    one = pygame.image.load("one.jpg").convert_alpha()
+    two = pygame.image.load("two.jpg").convert_alpha()
+    three = pygame.image.load("three.png").convert_alpha()
+    one = pygame.transform.scale(one, (30, 60))
+    two = pygame.transform.scale(two, (45, 60))
+    three = pygame.transform.scale(three, (40, 60))
+
     SCREENWIDTH = 1000
     SCREENHEIGHT = 600
     size = (SCREENWIDTH, SCREENHEIGHT)
@@ -91,10 +98,10 @@ def game(game):
     SPIN_DOWN = -1
     angle = 0
     angle2 = 0
-
     score= 0
 
     while carryOn:
+        screen.fill(WHITE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 carryOn = False
@@ -177,12 +184,18 @@ def game(game):
         all_sprites_list.update()
 
         if (not player2.alive()) or (not player.alive()):
-            cd+=1
-            if cd == 200:
-                cd=0
+            cd += 1
+            if cd < 25:
+                screen.blit(three, (930, 20))
+            elif 75 > cd > 50:
+                screen.blit(two, (930, 20))
+            elif 100 < cd < 125:
+                screen.blit(one, (930, 20))
+            if cd == 150:
+                cd = 0
                 if not player.alive() and not player2.alive():
-                    s1+=1
-                    s2+=1
+                    s1 += 1
+                    s2 += 1
                 elif not player.alive():
                     s2 += 1
                 elif not player2.alive():
@@ -222,7 +235,8 @@ def game(game):
                 player.walls = walls
                 player2.walls = walls
 
-        screen.fill(WHITE)
+
+
 
         pygame.display.set_caption("Player 1 - " + str(s1) + "  Player 2 - " + str(s2))
         all_sprites_list.draw(screen)
