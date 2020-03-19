@@ -55,17 +55,34 @@ class Tank(pygame.sprite.Sprite):
         if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
             self.rect.y = self.rect.y - self.movey
 
+    def contains(self, x,y):
+        if x<self.rect.x or x>self.rect.x+self.rect.w or y<self.rect.y or y>self.rect.y+self.rect.h:
+            return False
+        return True
+
+    def AIdir(self, enemy):
+        xstart = self.rect.x + self.image.get_width()/2*(1+cos(radians(self.dir)))
+        ystart = self.rect.y + self.image.get_height()/2*(1-sin(radians(self.dir)))
+        for i in range(120):
+            x = xstart
+            y = ystart
+            xa = round(cos(radians(i*3))*30)
+            ya = -round(sin(radians(i*3))*30)
+            for j in range(60):
+                x += xa
+                y += ya
+                if enemy.contains(x,y):
+                    return i*3
+        return self.dir
+
+
+
     def getdirection(self):
+
         num = random.randint(0,1)
         if num == 0:
             return 1
         return 3
-
-    def getangle(self):
-        num = random.randint(0,1)
-        if num == 0:
-            return 1
-        return -1
 
 
 

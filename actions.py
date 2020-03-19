@@ -155,15 +155,21 @@ def game(game):
 
         if game == 1:
             if tic % 20 == 0:
-                p2angle = player2.getangle()
+                p2angle = player2.AIdir(player)
                 p2dir = player2.getdirection()
             if tic % 100 == 0:
                 if player2.alive():
                     bullet = player2.shoot()
                     all_sprites_list.add(bullet)
             tic += 1
-            player2.setangle(p2angle)
-            player2.move(p2dir)
+            if (p2angle - player2.dir)%360 < 4 or (player2.dir - p2angle)%360 < 4:
+                pass
+            elif (p2angle - player2.dir)%360 < 180:
+                player2.setangle(1)
+            else:
+                player2.setangle(-1)
+
+
         if game == 2:
             player2.setangle(angle2)
             player2.move(direction2)
