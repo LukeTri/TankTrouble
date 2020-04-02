@@ -82,6 +82,28 @@ def game(game):
     walls.add(Wall(700, 100, 200, 5))
     walls.add(Wall(800, 500, 100, 5))
     walls.add(Wall(900, 200, 5, 200))
+    wlist = walls.sprites()
+
+
+    grid = []
+
+    for i in range(13):
+        curli = []
+        if i%2 == 0:
+            for j in range(10):
+                curli.append(0)
+                for item in wlist:
+                    if item.contains(j*100+30, i/2*100):
+                        curli[j] = 1
+        else:
+            for j in range(11):
+                curli.append(0)
+                for item in wlist:
+                    if item.contains(j*100, (i-1)*50 + 30):
+                        curli[j] = 1
+        grid.append(curli)
+    print(grid)
+
 
 
     all_sprites_list.add(walls)

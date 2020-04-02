@@ -60,6 +60,8 @@ class Tank(pygame.sprite.Sprite):
             return False
         return True
 
+
+
     def AIdir(self, enemy):
         xstart = self.rect.x + self.image.get_width()/2*(1+cos(radians(self.dir)))
         ystart = self.rect.y + self.image.get_height()/2*(1-sin(radians(self.dir)))
