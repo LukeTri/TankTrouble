@@ -31,8 +31,9 @@ class Tank(pygame.sprite.Sprite):
         self.movey = y
 
     def shoot(self):
-        return Bullet(self.rect.x + self.image.get_width()/2*(1+cos(radians(self.dir))), self.rect.y +
-                      self.image.get_height()/2*(1-sin(radians(self.dir))), self.dir, self.name, self.walls, self.game)
+        return Bullet(self.rect.centerx+30*cos(radians(self.dir)), self.rect.centery+30*-sin(radians(self.dir)), self.dir, self.name, self.walls,
+                      self.game)
+
 
 
 
@@ -77,6 +78,69 @@ class Tank(pygame.sprite.Sprite):
                     return i*3
         return self.dir
 
+    def RAIdir(self, grid, enemy):
+        targetx = enemy.rect.centerx
+        targety = enemy.rect.centery
+        angles = []
+        for i in range(8):
+            angle = i*45
+            startx = self.rect.centerx+30*cos(radians(angle))
+            starty = self.rect.centery+30*-sin(radians(angle))
+            x = startx
+            y = starty
+
+            xm = round(6*cos(radians(angle)))
+            ym = round(-6*sin(radians(angle)))
+            for j in range(150):
+                xn = int(x // 100)
+                yn = int(y // 100)
+
+                x += xm
+                if (x % 100 > 90 and xm > 0) or (x % 100 < 10 and xm < 0):
+                    if yn == 6 or yn == 7:
+                        yn = 5
+                    if yn == -1:
+                        yn == 0
+                    if xn == -1:
+                        xn == 0
+                    if xn == 11:
+                        xn = 10
+                    try:
+                        if grid[yn*2+1][xn] == 1:
+                            xm = xm*-1
+                    except:
+                        print(yn*2+1)
+                        print(xn)
+                y += ym
+                if (y % 100 > 90 and ym > 0) or (y % 100 < 10 and ym < 0):
+                    if xn == 10:
+                        xn = 9
+                    if yn == 7:
+                        yn = 6
+                    if yn == -1:
+                        yn == 0
+                    if xn == -1:
+                        xn == 0
+                    try:
+                        if grid[yn*2][xn] == 1:
+                            ym = ym*-1
+                    except:
+                        print(yn*2)
+                        print(xn)
+                if abs(x - targetx) < 30 and abs(y - targety) < 30:
+                    if angle%90 == 0:
+                        return angle
+                    else:
+                        angles.append(angle)
+        if angles:
+            return angles[0]
+        return -1
+
+
+
+
+    def AIMove(self, grid, enemy):
+        pass
 
 
     def getdirection(self):

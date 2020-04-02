@@ -18,6 +18,49 @@ def game(game):
     two = pygame.transform.scale(two, (45, 60))
     three = pygame.transform.scale(three, (40, 60))
 
+    walls = pygame.sprite.Group()
+    walls.add(Wall(0, 0, 5, 600))
+    walls.add(Wall(0, 0, 1000, 5))
+    walls.add(Wall(995, 0, 5, 600))
+    walls.add(Wall(0, 595, 1000, 5))
+    walls.add(Wall(100, 100, 400, 5))
+    walls.add(Wall(100, 200, 5, 300))
+    walls.add(Wall(200, 100, 5, 200))
+    walls.add(Wall(200, 400, 5, 100))
+    walls.add(Wall(300, 200, 100, 5))
+    walls.add(Wall(200, 400, 400, 5))
+    walls.add(Wall(600, 200, 5, 200))
+    walls.add(Wall(300, 500, 400, 5))
+    walls.add(Wall(600, 0, 5, 100))
+    walls.add(Wall(500, 200, 5, 100))
+    walls.add(Wall(300, 300, 200, 5))
+    walls.add(Wall(800, 200, 5, 300))
+    walls.add(Wall(700, 100, 5, 100))
+    walls.add(Wall(700, 300, 5, 100))
+    walls.add(Wall(700, 100, 200, 5))
+    walls.add(Wall(800, 500, 100, 5))
+    walls.add(Wall(900, 200, 5, 200))
+    wlist = walls.sprites()
+
+    grid = []
+
+    for i in range(13):
+        curli = []
+        if i % 2 == 0:
+            for j in range(10):
+                curli.append(0)
+                for item in wlist:
+                    if item.contains(j * 100 + 30, i / 2 * 100):
+                        curli[j] = 1
+        else:
+            for j in range(11):
+                curli.append(0)
+                for item in wlist:
+                    if item.contains(j * 100, (i - 1) * 50 + 30):
+                        curli[j] = 1
+        grid.append(curli)
+    print(grid)
+
     SCREENWIDTH = 1000
     SCREENHEIGHT = 600
     size = (SCREENWIDTH, SCREENHEIGHT)
@@ -33,8 +76,24 @@ def game(game):
     d2 = random.randint(0,3)
     xpos1 = 100*random.randint(0, 9) + 20
     ypos1 = 100*random.randint(0, 5) + 35
-    xpos2 = 100*random.randint(0, 9) + 20
-    ypos2 = 100*random.randint(0, 5) + 35
+
+    var = True
+    while var:
+        xpos2 = 100 * random.randint(0, 9) + 20
+        ypos2 = 100 * random.randint(0, 5) + 35
+        xn = xpos2 // 100
+        yn = ypos2 // 100
+        count = 0
+        if grid[yn * 2][xn] == 1:
+            count += 1
+        if grid[yn * 2 + 2][xn] == 1:
+            count += 1
+        if grid[yn * 2 + 1][xn] == 1:
+            count += 1
+        if grid[yn * 2+1][xn + 1] == 1:
+            count += 1
+        if count < 2:
+            var = False
 
 
     if game == 2:
@@ -60,49 +119,8 @@ def game(game):
     all_sprites_list.add(player2)
     players.add(player)
     players.add(player2)
-    walls = pygame.sprite.Group()
-    walls.add(Wall(0, 0, 5, 600))
-    walls.add(Wall(0, 0, 1000, 5))
-    walls.add(Wall(995, 0, 5, 600))
-    walls.add(Wall(0, 595, 1000, 5))
-    walls.add(Wall(100, 100, 400, 5))
-    walls.add(Wall(100, 200, 5, 300))
-    walls.add(Wall(200, 100, 5, 200))
-    walls.add(Wall(200, 400, 5, 100))
-    walls.add(Wall(300, 200, 100, 5))
-    walls.add(Wall(200, 400, 400, 5))
-    walls.add(Wall(600, 200, 5, 200))
-    walls.add(Wall(300, 500, 400, 5))
-    walls.add(Wall(600, 0, 5, 100))
-    walls.add(Wall(500, 200, 5, 100))
-    walls.add(Wall(300, 300, 200, 5))
-    walls.add(Wall(800, 200, 5, 300))
-    walls.add(Wall(700, 100, 5, 100))
-    walls.add(Wall(700, 300, 5, 100))
-    walls.add(Wall(700, 100, 200, 5))
-    walls.add(Wall(800, 500, 100, 5))
-    walls.add(Wall(900, 200, 5, 200))
-    wlist = walls.sprites()
 
 
-    grid = []
-
-    for i in range(13):
-        curli = []
-        if i%2 == 0:
-            for j in range(10):
-                curli.append(0)
-                for item in wlist:
-                    if item.contains(j*100+30, i/2*100):
-                        curli[j] = 1
-        else:
-            for j in range(11):
-                curli.append(0)
-                for item in wlist:
-                    if item.contains(j*100, (i-1)*50 + 30):
-                        curli[j] = 1
-        grid.append(curli)
-    print(grid)
 
 
 
@@ -121,6 +139,8 @@ def game(game):
     angle = 0
     angle2 = 0
     score= 0
+    ais = True
+    p2angle = 0
 
     while carryOn:
         screen.fill(WHITE)
@@ -174,23 +194,30 @@ def game(game):
 
         player.setangle(angle)
         player.move(direction)
-
+        shots = 0
         if game == 1:
-            if tic % 20 == 0:
-                p2angle = player2.AIdir(player)
-                p2dir = player2.getdirection()
-            if tic % 100 == 0:
-                if player2.alive():
-                    bullet = player2.shoot()
-                    all_sprites_list.add(bullet)
-            tic += 1
-            if (p2angle - player2.dir)%360 < 4 or (player2.dir - p2angle)%360 < 4:
-                pass
-            elif (p2angle - player2.dir)%360 < 180:
-                player2.setangle(1)
-            else:
-                player2.setangle(-1)
 
+            for item in all_sprites_list.sprites():
+                if item.getType() == "bullet":
+                    if item.tank == "2":
+                        shots += 1
+
+            if ais:
+                olda = p2angle
+                p2angle = player2.RAIdir(grid,player)
+                if olda != p2angle:
+                    tic = 0
+                if p2angle != -1:
+                    if (p2angle - player2.dir) % 360 < 2 or (player2.dir - p2angle) % 360 < 2:
+                        if tic % 50 == 15 and shots <= 5:
+                            if player2.alive():
+                                bullet = player2.shoot()
+                                all_sprites_list.add(bullet)
+                    elif (p2angle - player2.dir) % 360 < 180:
+                        player2.setangle(1)
+                    else:
+                        player2.setangle(-1)
+            tic += 1
 
         if game == 2:
             player2.setangle(angle2)
@@ -233,8 +260,24 @@ def game(game):
                 d2 = random.randint(0, 3)
                 xpos1 = 100 * random.randint(0, 9) + 20
                 ypos1 = 100 * random.randint(0, 5) + 35
-                xpos2 = 100 * random.randint(0, 9) + 20
-                ypos2 = 100 * random.randint(0, 5) + 35
+                var = True
+                while var:
+                    xpos2 = 100 * random.randint(0, 9) + 20
+                    ypos2 = 100 * random.randint(0, 5) + 35
+                    xn = xpos2 // 100
+                    yn = ypos2 // 100
+                    count = 0
+                    if grid[yn * 2][xn] == 1:
+                        count += 1
+                    if grid[yn * 2 + 2][xn] == 1:
+                        count += 1
+                    if grid[yn * 2 + 1][xn] == 1:
+                        count += 1
+                    if grid[yn * 2 + 1][xn + 1] == 1:
+                        count += 1
+                    if count < 2:
+                        var = False
+
 
 
                 if game == 2:
