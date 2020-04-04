@@ -14,7 +14,7 @@ class Tank(pygame.sprite.Sprite):
 
     def move(self, direction):
         if direction != 0:
-            self.control(round(cos(radians(self.dir)) * (direction - 2)*5), -round(sin(radians(self.dir)) * (direction - 2)*5))
+            self.control(round(cos(radians(self.dir)) * direction * 5), -round(sin(radians(self.dir)) * direction * 5))
         else:
             self.control(0, 0)
 
@@ -60,23 +60,6 @@ class Tank(pygame.sprite.Sprite):
         if x<self.rect.x or x>self.rect.x+self.rect.w or y<self.rect.y or y>self.rect.y+self.rect.h:
             return False
         return True
-
-
-
-    def AIdir(self, enemy):
-        xstart = self.rect.x + self.image.get_width()/2*(1+cos(radians(self.dir)))
-        ystart = self.rect.y + self.image.get_height()/2*(1-sin(radians(self.dir)))
-        for i in range(120):
-            x = xstart
-            y = ystart
-            xa = round(cos(radians(i*3))*30)
-            ya = -round(sin(radians(i*3))*30)
-            for j in range(60):
-                x += xa
-                y += ya
-                if enemy.contains(x,y):
-                    return i*3
-        return self.dir
 
     def RAIdir(self, grid, enemy):
         targetx = enemy.rect.centerx
@@ -138,10 +121,34 @@ class Tank(pygame.sprite.Sprite):
 
 
 
-
-    def AIMove(self, grid, enemy):
-        pass
-
+    def AIMove(self, grid, enemy, last):
+        if last == 0:
+            worst = 1
+        elif last == 180:
+            worst = 2
+        elif last == 90:
+            worst = 4
+        else:
+            worst = 3
+        order = [1,2,3,4]
+        order.remove(worst)
+        random.shuffle(order)
+        order.append(worst)
+        xn = self.rect.x // 100
+        yn = self.rect.y // 100
+        for item in order:
+            if item < 3:
+                if grid[2*yn+1][xn + item - 1] == 0:
+                    if item == 1:
+                        return 180
+                    if item == 2:
+                        return 0
+            else:
+                if grid[2*yn+2*(item-3)][xn] == 0:
+                    if item == 3:
+                        return 90
+                    if item == 4:
+                        return 270
 
     def getdirection(self):
 

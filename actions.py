@@ -130,8 +130,8 @@ def game(game):
 
 
     carryOn = True
-    MOVE_RIGHT = 3
-    MOVE_LEFT = 1
+    MOVE_RIGHT = 1
+    MOVE_LEFT = -1
     direction = 0
     direction2 = 0
     SPIN_UP = 1
@@ -141,6 +141,9 @@ def game(game):
     score= 0
     ais = True
     p2angle = 0
+    AIdir = -1
+    m = 0
+    last = 0
 
     while carryOn:
         screen.fill(WHITE)
@@ -217,6 +220,25 @@ def game(game):
                         player2.setangle(1)
                     else:
                         player2.setangle(-1)
+                else:
+                    ais = False
+            else:
+                if AIdir == -1:
+                    AIdir = player2.AIMove(grid, player, last)
+                if (AIdir - player2.dir) % 360 < 2 or (player2.dir - AIdir) % 360 < 2:
+                    if m < 20:
+                        player2.move(1)
+                        m += 1
+                    else:
+                        player2.move(0)
+                        last = AIdir
+                        AIdir = -1
+                        m = 0
+                        ais = True
+                elif (AIdir - player2.dir) % 360 < 180:
+                    player2.setangle(1)
+                else:
+                    player2.setangle(-1)
             tic += 1
 
         if game == 2:
@@ -226,7 +248,6 @@ def game(game):
         for item in all_sprites_list:
             if item.getType() == "bullet":
                 num = item.hit(players, p1, p2)
-
         if not(player in all_sprites_list.sprites()):
             if not score == 1:
                 score = -1
@@ -277,9 +298,6 @@ def game(game):
                         count += 1
                     if count < 2:
                         var = False
-
-
-
                 if game == 2:
                     player = Tank(xpos1, ypos1, "1", 0)
                     player2 = Tank(xpos2, ypos2, "2", 0)
