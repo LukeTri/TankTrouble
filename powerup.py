@@ -1,14 +1,17 @@
 import pygame
 
-base_image = pygame.image.load("shrink.png")
-base_image = pygame.transform.scale(base_image, (30,30))
+
+shrink_image = pygame.transform.scale(pygame.image.load("shrink.png"), (30,30))
+wallbreak_image = pygame.transform.scale(pygame.image.load("wallbreak.jpg"), (45,40))
 
 class Powerup(pygame.sprite.Sprite):
     def __init__(self, name, x, y):
         super().__init__()
         self.name = name
         if name == "shrink":
-            self.image = base_image.convert_alpha()
+            self.image = shrink_image.convert_alpha()
+        if name == "wallbreak":
+            self.image = wallbreak_image.convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

@@ -31,7 +31,7 @@ class Tank(pygame.sprite.Sprite):
 
     def shoot(self):
         return Bullet(self.rect.centerx+30*cos(radians(self.dir)), self.rect.centery+30*-sin(radians(self.dir)), self.dir, self.name, self.walls,
-                      self.game)
+                      self.game, self.wallbreak)
 
 
 
@@ -55,6 +55,14 @@ class Tank(pygame.sprite.Sprite):
             self.shrink = False
             self.stime = 0
             self.base_image = pygame.transform.scale(pygame.image.load("car.png"), (60, 30))
+
+        if self.wallbreak:
+            self.wtime = self.wtime + 1
+
+        if self.wtime > 500:
+            self.wallbreak = False
+            self.wtime = 0
+
 
         self.rotate()
         self.rect.x = self.rect.x + self.movex
@@ -195,8 +203,11 @@ class Tank(pygame.sprite.Sprite):
             self.image = rot_image.convert_alpha()
             self.rect = rot_rect
 
-    def setShrink(self):
-        self.shrink = True
+    def setPowerup(self,item):
+        if item.name == "shrink":
+            self.shrink = True
+        elif item.name == "wallbreak":
+            self.wallbreak = True
 
     def __init__(self, x, y, name, game):
         # Call the parent class (Sprite) constructor
@@ -215,3 +226,5 @@ class Tank(pygame.sprite.Sprite):
         self.game = game
         self.shrink = False
         self.stime = 0
+        self.wallbreak = False
+        self.wtime = 0

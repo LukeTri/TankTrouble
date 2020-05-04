@@ -6,7 +6,7 @@ base_image = pygame.image.load("ball.png")
 base_image = pygame.transform.scale(base_image, (10,10))
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, angle, tank, walls, game):
+    def __init__(self, x, y, angle, tank, walls, game, wallbreak):
         super().__init__()
         self.walls = walls
         self.dir = angle
@@ -20,6 +20,7 @@ class Bullet(pygame.sprite.Sprite):
         self.bounces = 0
         self.time = 0
         self.game = game
+        self.wb = wallbreak
 
     def getType(self):
         return "bullet"
@@ -36,23 +37,23 @@ class Bullet(pygame.sprite.Sprite):
         self.time += 1
         if self.time == 300:
             self.kill()
-
-
         self.rect.x += self.xdir
-        if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
-            self.xdir = self.xdir * -1
-            self.rect.x += self.xdir
-            if self.game == 1:
-                if not self.tank == "2":
+        if not self.wb:
+            if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
+                self.xdir = self.xdir * -1
+                self.rect.x += self.xdir
+                if self.game == 1:
+                    if not self.tank == "2":
+                        self.tank = ''
+                else:
                     self.tank = ''
-            else:
-                self.tank = ''
         self.rect.y += self.ydir
-        if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
-            self.ydir = self.ydir * -1
-            self.rect.y += self.ydir
-            if self.game == 1:
-                if not self.tank == "2":
+        if not self.wb:
+            if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
+                self.ydir = self.ydir * -1
+                self.rect.y += self.ydir
+                if self.game == 1:
+                    if not self.tank == "2":
+                        self.tank = ''
+                else:
                     self.tank = ''
-            else:
-                self.tank = ''

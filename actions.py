@@ -121,6 +121,7 @@ def game(game):
     players.add(player)
     players.add(player2)
     shrinkTime = random.randint(0,1000)
+    wallbreakTime = random.randint(0,1000)
 
 
 
@@ -148,6 +149,8 @@ def game(game):
     last = 0
     resetAngle = False
     CLOCK = 0
+    p1shots = 0
+    p2shots = 0
 
     while carryOn:
         CLOCK+=1
@@ -165,7 +168,7 @@ def game(game):
                 elif event.key == K_RIGHT:
                     angle = SPIN_DOWN
                 elif event.key == K_SPACE:
-                    if player.alive():
+                    if player.alive() and p1shots <=5:
                         bullet = player.shoot()
                         all_sprites_list.add(bullet)
                 elif event.key == K_s:
@@ -177,7 +180,7 @@ def game(game):
                 elif event.key == K_d:
                     angle2 = SPIN_DOWN
                 elif event.key == K_q:
-                    if player2.alive():
+                    if player2.alive() and p2shots <= 5:
                         bullet = player2.shoot()
                         all_sprites_list.add(bullet)
 
@@ -202,14 +205,18 @@ def game(game):
 
         player.setangle(angle)
         player.move(direction)
-        shots = 0
+
+        p1shots = 0
+        p2shots = 0
+
+        for item in all_sprites_list.sprites():
+            if item.getType() == "bullet":
+                if item.tank == "2":
+                    p2shots += 1
+                if item.tank == "1":
+                    p1shots += 1
+
         if game == 1:
-
-            for item in all_sprites_list.sprites():
-                if item.getType() == "bullet":
-                    if item.tank == "2":
-                        shots += 1
-
             if ais:
                 olda = p2angle
                 p2angle = player2.RAIdir(grid,player)
@@ -217,7 +224,7 @@ def game(game):
                     tic = 0
                 if p2angle != -1:
                     if (p2angle - player2.dir) % 360 < 2 or (player2.dir - p2angle) % 360 < 2:
-                        if tic % 50 == 15 and shots <= 5:
+                        if tic % 50 == 15 and p2shots <= 5:
                             if player2.alive():
                                 bullet = player2.shoot()
                                 all_sprites_list.add(bullet)
@@ -249,9 +256,10 @@ def game(game):
 
         if game == 2:
             if CLOCK%1000 == shrinkTime:
-                xpos2 = 100 * random.randint(0, 9) + 20
-                ypos2 = 100 * random.randint(0, 5) + 35
                 all_sprites_list.add(Powerup("shrink", 100 * random.randint(0, 9) + 20, 100 * random.randint(0, 5) + 35))
+
+            if CLOCK%1000 == wallbreakTime:
+                all_sprites_list.add(Powerup("wallbreak", 100 * random.randint(0, 9) + 20, 100 * random.randint(0, 5) + 35))
 
         if game == 2:
             player2.setangle(angle2)
@@ -264,10 +272,10 @@ def game(game):
                 num = item.hit(player, player2)
                 if num == "1":
                     all_sprites_list.remove(item)
-                    player.setShrink()
+                    player.setPowerup(item)
                 elif num == "2":
                     all_sprites_list.remove(item)
-                    player2.setShrink()
+                    player2.setPowerup(item)
 
         if not(player in all_sprites_list.sprites()):
             if not score == 1:
@@ -345,6 +353,8 @@ def game(game):
                 player.walls = walls
                 player2.walls = walls
                 CLOCK = 0
+                shrinkTime = random.randint(0, 1000)
+                wallbreakTime = random.randint(0, 1000)
 
 
 
