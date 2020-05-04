@@ -6,8 +6,7 @@ import random
 from bullet import Bullet
 
 WHITE = (255, 255, 255)
-base_image = pygame.image.load("car.png")
-base_image = pygame.transform.scale(base_image, (60,30))
+
 
 class Tank(pygame.sprite.Sprite):
     #This class represents a car. It derives from the "Sprite" class in Pygame.
@@ -46,9 +45,18 @@ class Tank(pygame.sprite.Sprite):
         '''
         Update sprite position
         '''
+
+        if self.shrink:
+            self.stime = self.stime + 1
+
+        if self.stime == 1:
+            self.base_image = pygame.transform.scale(self.base_image, (40,20))
+        elif self.stime > 500:
+            self.shrink = False
+            self.stime = 0
+            self.base_image = pygame.transform.scale(pygame.image.load("car.png"), (60, 30))
+
         self.rotate()
-
-
         self.rect.x = self.rect.x + self.movex
         if len(pygame.sprite.spritecollide(self, self.walls, False)) != 0:
             self.rect.x = self.rect.x - self.movex
@@ -160,7 +168,7 @@ class Tank(pygame.sprite.Sprite):
 
 
     def rotate(self):
-        rot_image = pygame.transform.rotate(base_image, self.dir)
+        rot_image = pygame.transform.rotate(self.base_image, self.dir)
         rot_rect = rot_image.get_rect(center=self.rect.center)
         self.image = rot_image.convert_alpha()
         self.rect = rot_rect
@@ -181,19 +189,23 @@ class Tank(pygame.sprite.Sprite):
                 rot_rect.y +=2
                 self.dir -= 3*self.angle
                 self.rect = rot_rect
-            rot_image = pygame.transform.rotate(base_image, self.dir)
+            rot_image = pygame.transform.rotate(self.base_image, self.dir)
             self.image = rot_image.convert_alpha()
         else:
             self.image = rot_image.convert_alpha()
             self.rect = rot_rect
 
+    def setShrink(self):
+        self.shrink = True
+
     def __init__(self, x, y, name, game):
         # Call the parent class (Sprite) constructor
         super().__init__()
+        self.base_image = pygame.transform.scale(pygame.image.load("car.png"), (60,30))
         self.movex = 0  # move along X
         self.movey = 0  # move along Y
         self.dir = 0
-        self.image = base_image.convert_alpha()
+        self.image = self.base_image.convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -201,3 +213,5 @@ class Tank(pygame.sprite.Sprite):
         self.walls = pygame.sprite.Group()
         self.angle = 0
         self.game = game
+        self.shrink = False
+        self.stime = 0

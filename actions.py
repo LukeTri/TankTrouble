@@ -2,6 +2,7 @@ import pygame, random
 # Let's import the Car Class
 from tank import Tank
 from wall import Wall
+from powerup import Powerup
 from bullet import Bullet
 from pygame.locals import *
 from math import *
@@ -21,8 +22,8 @@ def game(game):
     walls = pygame.sprite.Group()
     walls.add(Wall(0, 0, 5, 600))
     walls.add(Wall(0, 0, 1000, 5))
-    walls.add(Wall(995, 0, 5, 600))
-    walls.add(Wall(0, 595, 1000, 5))
+    walls.add(Wall(1000, 0, 5, 600))
+    walls.add(Wall(0, 600, 1000, 5))
     walls.add(Wall(100, 100, 400, 5))
     walls.add(Wall(100, 200, 5, 300))
     walls.add(Wall(200, 100, 5, 200))
@@ -61,8 +62,8 @@ def game(game):
         grid.append(curli)
     print(grid)
 
-    SCREENWIDTH = 1000
-    SCREENHEIGHT = 600
+    SCREENWIDTH = 1005
+    SCREENHEIGHT = 605
     size = (SCREENWIDTH, SCREENHEIGHT)
     screen = pygame.display.set_mode(size)
 
@@ -119,6 +120,7 @@ def game(game):
     all_sprites_list.add(player2)
     players.add(player)
     players.add(player2)
+    shrinkTime = random.randint(0,1000)
 
 
 
@@ -144,8 +146,11 @@ def game(game):
     AIdir = -1
     m = 0
     last = 0
+    resetAngle = False
+    CLOCK = 0
 
     while carryOn:
+        CLOCK+=1
         screen.fill(WHITE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -222,6 +227,7 @@ def game(game):
                         player2.setangle(-1)
                 else:
                     ais = False
+
             else:
                 if AIdir == -1:
                     AIdir = player2.AIMove(grid, player, last)
@@ -239,7 +245,13 @@ def game(game):
                     player2.setangle(1)
                 else:
                     player2.setangle(-1)
-            tic += 1
+        tic += 1
+
+        if game == 2:
+            if CLOCK%1000 == shrinkTime:
+                xpos2 = 100 * random.randint(0, 9) + 20
+                ypos2 = 100 * random.randint(0, 5) + 35
+                all_sprites_list.add(Powerup("shrink", 100 * random.randint(0, 9) + 20, 100 * random.randint(0, 5) + 35))
 
         if game == 2:
             player2.setangle(angle2)
@@ -248,6 +260,15 @@ def game(game):
         for item in all_sprites_list:
             if item.getType() == "bullet":
                 num = item.hit(players, p1, p2)
+            elif item.getType() == "powerup":
+                num = item.hit(player, player2)
+                if num == "1":
+                    all_sprites_list.remove(item)
+                    player.setShrink()
+                elif num == "2":
+                    all_sprites_list.remove(item)
+                    player2.setShrink()
+
         if not(player in all_sprites_list.sprites()):
             if not score == 1:
                 score = -1
@@ -323,6 +344,7 @@ def game(game):
                 all_sprites_list.add(walls)
                 player.walls = walls
                 player2.walls = walls
+                CLOCK = 0
 
 
 
